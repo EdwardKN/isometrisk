@@ -1,26 +1,23 @@
 var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
-var preRenderCanvas = document.getElementById("prerender");
-var preRenderCtx = preRenderCanvas.getContext("2d");
 
-preRenderCanvas.style.display = "none";
 
 backCanvas.width = 1920;
 backCanvas.height = 1080
-preRenderCanvas.width = 6000;
-preRenderCanvas.height = 4000;
 
 backCtx.imageSmoothingEnabled = false;
-preRenderCtx.imageSmoothingEnabled = false;
 
 var map = [];
-const mapSize = 200;
+
+var chunkArray = [];
+const chunkSize = 20;
+const mapSize = 3;
 
 const scale = 100;
 
 var player = {
-    x: 2410,
-    y: 905,
+    x: 0,
+    y: 0,
     z: 0,
     rotation: 0,
     speed: 2,
@@ -126,80 +123,110 @@ function convertCanvasToImage(canvas) {
 }
 
 function generateMap(){
-    for(var z = 0; z < 5; z++){
-        let tmpMap1 = []
-        for(var y = 0; y < mapSize; y++){
-            let tmpMap = []
-            for(var x = 0; x < mapSize; x++){
-                if(z == 0){
-                    tmpMap.push(0);
-                }
-                if(z == 1){
-                    if(Math.random() < 0.1){
-                        tmpMap.push(1);
-                    }else if(Math.random() < 0.1){
-                        tmpMap.push(3);
-                    }else if(Math.random() < 0.05){
-                        tmpMap.push(0);
-                    }else{
-                        tmpMap.push(-1);
-                    }
-                }
+    for(var chunkX = 0; chunkX < mapSize; chunkX++){
+        var tmpMap3 = [];
+        for(var chunkY = 0; chunkY < mapSize; chunkY++){
+            var tmpMap2 = [];
+            for(var z = 0; z < 5; z++){
+                let tmpMap1 = []
+                for(var y = 0; y < chunkSize; y++){
+                    let tmpMap = []
+                    for(var x = 0; x < chunkSize; x++){
+                        if(z == 0){
+                            if(Math.random() < 0.01){
+                                tmpMap.push(4);
+                            }else{
+                                tmpMap.push(0);
+                            }
+                        }
+                        if(z == 1){
+                            if(Math.random() < 0.1){
+                                tmpMap.push(1);
+                            }else if(Math.random() < 0.1){
+                                tmpMap.push(3);
+                            }else if(Math.random() < 0.05){
+                                tmpMap.push(0);
+                            }else if(Math.random() < 0.05){
+                                tmpMap.push(5);
+                            }else{
+                                tmpMap.push(-1);
+                            }
+                        }
 
-            }
-            tmpMap1.push(tmpMap);
-        }
-        map.push(tmpMap1);
-    }
-    for(var z = 0; z < 4; z++){
-        for(var y = 1; y < mapSize-1; y++){
-            for(var x = 1; x < mapSize-1; x++){
-                if(z == 1){
-                    if(map[z][y][x] == 0){
-                        map[z][y-1][x] = 1
-                        map[z][y][x-1] = 1
-                        map[z][y][x+1] = 1
-                        map[z][y+1][x] = 1
                     }
+                    tmpMap1.push(tmpMap);
                 }
+                tmpMap2.push(tmpMap1);
             }
+            tmpMap3.push(tmpMap2);
         }
+        map.push(tmpMap3);
     }
     prerender()
 }
 
 function prerender(){
-    preRenderCtx.clearRect(0,0,preRenderCanvas.width,preRenderCanvas.height);
-    for(var z = 0; z < 5; z++){
-        for(var y = 0; y < map[0].length; y++){
-            for(var x = 0; x < map[0].length; x++){
-                if(map[z][y][x] >= 0){
-                    preRenderCtx.drawImage(blocks,map[z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
+    
+
+    //preRenderCanvas.style.display = "none";
+
+    for(var chunkX = 0; chunkX < mapSize; chunkX++){
+        var tmpchunkArray = [];
+        for(var chunkY = 0; chunkY < mapSize; chunkY++){
+
+            var preRenderCanvas = document.createElement("canvas");
+            var preRenderCtx = preRenderCanvas.getContext("2d");
+            
+            preRenderCanvas.width = 1920;
+            preRenderCanvas.height = 1080;
+
+            for(var z = 0; z < 5; z++){
+                for(var y = 0; y < chunkSize; y++){
+                    for(var x = 0; x < chunkSize; x++){
+                        if(map[chunkX][chunkY][z][y][x] >= 0){
+                            preRenderCtx.drawImage(blocks,map[chunkX][chunkY][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + 150,to_screen_coordinate(x,y+z*2).y/5-z*scale/5 + 10,20,20);
+                        }
+                    }
                 }
             }
+
+
+            image = convertCanvasToImage(preRenderCanvas);
+
+            tmpchunkArray.push(image);
+            
+            preRenderCtx.drawImage(image,0,0);
+
+
         }
+        chunkArray.push(tmpchunkArray)
+
     }
-    image = convertCanvasToImage(preRenderCanvas);
-    backCtx.drawImage(image,0,0);
 }
 
 
 function to_screen_coordinate(x,y){
     return {
-        x: x*0.5*scale+y*-0.5*scale - 0.5*scale + preRenderCanvas.width/2 +mapSize*scale/2,
+        x: x*0.5*scale+y*-0.5*scale - 0.5*scale,
         y: x*0.25*scale+y*0.25*scale
     }
 }
 
 function show_map(){
     backCtx.clearRect(0,0,backCanvas.width,backCanvas.height);
-    backCtx.drawImage(image,player.x,player.y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+    for(let chunkX = 0; chunkX < mapSize; chunkX++){
+        for(let chunkY = 0; chunkY < mapSize; chunkY++){
+            backCtx.drawImage(chunkArray[chunkY][chunkX],player.x + to_screen_coordinate(-chunkX*2,-chunkY*2).x,player.y + to_screen_coordinate(-chunkX*2,-chunkY*2).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+        }
+    }
 }
 
 setTimeout(() => {
     generateMap()
-}, 20);
-
+}, 200);
+setTimeout(() => {
+    update()
+}, 400);
 function update(){
     show_map()
     requestAnimationFrame(update);
@@ -248,4 +275,3 @@ function moveDown(speed){
     player.y += speed;
 }
 
-update()
