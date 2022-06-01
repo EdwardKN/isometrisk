@@ -7,7 +7,7 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
-perlin.seed(10)
+perlin.seed(1)
 
 var map = [];
 
@@ -286,23 +286,23 @@ function makePositive(a){
     }
     return a;
 }
-/*
+
 var testCanvas = document.getElementById("canvas");
 var testCanvasCtx = testCanvas.getContext("2d");
 
 testCanvas.width = 1920;
 testCanvas.height = 1080;
-*/
-function generateWater(x,y){
+
+function getPerlinNoise(x,y){
     let perlinNoise = makePositive(parseInt(perlin.get(x/20, y/20) * 255))
     if(perlinNoise < 0){
         perlinNoise = 0;
     }   
 
-    /*
+    
     testCanvasCtx.fillStyle = "rgb("+perlinNoise+","+perlinNoise+","+perlinNoise+")";
-    testCanvasCtx.fillRect(to_screen_coordinate(x,y).x/5 + 500,to_screen_coordinate(x,y).y/5,10,10);
-    */
+    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/5 + 500,to_screen_coordinate(x,y).y/5,10,10);
+    
     return perlinNoise
 
 }
