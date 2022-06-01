@@ -7,11 +7,14 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
+perlin.seed(10)
+
 var map = [];
 
 var chunkArray = [];
+
 const chunkSize = 20;
-const mapSize = 3;
+const mapSize = 2;
 
 const scale = 100;
 
@@ -133,23 +136,25 @@ function generateMap(){
                     let tmpMap = []
                     for(var x = 0; x < chunkSize; x++){
                         if(z == 0){
-                            if(Math.random() < 0.01){
+                            if(generateWater(x+chunkX*chunkSize,y+chunkY*chunkSize) > 90){
                                 tmpMap.push(4);
                             }else{
                                 tmpMap.push(0);
                             }
                         }
                         if(z == 1){
-                            if(Math.random() < 0.1){
-                                tmpMap.push(1);
-                            }else if(Math.random() < 0.1){
-                                tmpMap.push(3);
-                            }else if(Math.random() < 0.05){
-                                tmpMap.push(0);
-                            }else if(Math.random() < 0.05){
-                                tmpMap.push(5);
+                            if(tmpMap2[z-1][y][x] != 4){
+                                if(Math.random() < 0.1){
+                                    tmpMap.push(1);
+                                }else if(Math.random() < 0.1){
+                                    tmpMap.push(3);
+                                }else if(Math.random() < 0.05){
+                                    tmpMap.push(0);
+                                }else{
+                                    tmpMap.push(-1);
+                                }
                             }else{
-                                tmpMap.push(-1);
+                                tmpMap.push(-1)
                             }
                         }
 
@@ -184,7 +189,7 @@ function prerender(){
                 for(var y = 0; y < chunkSize; y++){
                     for(var x = 0; x < chunkSize; x++){
                         if(map[chunkX][chunkY][z][y][x] >= 0){
-                            preRenderCtx.drawImage(blocks,map[chunkX][chunkY][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + 150,to_screen_coordinate(x,y+z*2).y/5-z*scale/5 + 10,20,20);
+                            preRenderCtx.drawImage(blocks,map[chunkX][chunkY][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + 250,to_screen_coordinate(x,y+z*2).y/5-z*scale/5 + 10,20,20);
                         }
                     }
                 }
@@ -216,7 +221,7 @@ function show_map(){
     backCtx.clearRect(0,0,backCanvas.width,backCanvas.height);
     for(let chunkX = 0; chunkX < mapSize; chunkX++){
         for(let chunkY = 0; chunkY < mapSize; chunkY++){
-            backCtx.drawImage(chunkArray[chunkY][chunkX],player.x + to_screen_coordinate(-chunkX*2,-chunkY*2).x,player.y + to_screen_coordinate(-chunkX*2,-chunkY*2).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+            backCtx.drawImage(chunkArray[chunkY][chunkX],player.x + to_screen_coordinate(-chunkX*chunkSize/5,-chunkY*chunkSize/5).x,player.y + to_screen_coordinate(-chunkX*chunkSize/5,-chunkY*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
         }
     }
 }
@@ -275,3 +280,29 @@ function moveDown(speed){
     player.y += speed;
 }
 
+function makePositive(a){
+    if (a < 0) {
+        a = a * -1;
+    }
+    return a;
+}
+/*
+var testCanvas = document.getElementById("canvas");
+var testCanvasCtx = testCanvas.getContext("2d");
+
+testCanvas.width = 1920;
+testCanvas.height = 1080;
+*/
+function generateWater(x,y){
+    let perlinNoise = makePositive(parseInt(perlin.get(x/20, y/20) * 255))
+    if(perlinNoise < 0){
+        perlinNoise = 0;
+    }   
+
+    /*
+    testCanvasCtx.fillStyle = "rgb("+perlinNoise+","+perlinNoise+","+perlinNoise+")";
+    testCanvasCtx.fillRect(to_screen_coordinate(x,y).x/5 + 500,to_screen_coordinate(x,y).y/5,10,10);
+    */
+    return perlinNoise
+
+}
