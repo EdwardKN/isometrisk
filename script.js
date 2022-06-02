@@ -7,13 +7,13 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
-perlin.seed(1)
 
 var map = [];
+var negativeMap = []
 
 var chunkArray = [];
 
-const chunkSize = 20;
+const chunkSize = 50;
 const mapSize = 2;
 
 const scale = 100;
@@ -136,7 +136,8 @@ function generateMap(){
                     let tmpMap = []
                     for(var x = 0; x < chunkSize; x++){
                         if(z == 0){
-                            if(generateWater(x+chunkX*chunkSize,y+chunkY*chunkSize) > 90){
+    
+                            if(getPerlinNoise(x+chunkX*chunkSize,y+chunkY*chunkSize) > 90){
                                 tmpMap.push(4);
                             }else{
                                 tmpMap.push(0);
@@ -189,7 +190,7 @@ function prerender(){
                 for(var y = 0; y < chunkSize; y++){
                     for(var x = 0; x < chunkSize; x++){
                         if(map[chunkX][chunkY][z][y][x] >= 0){
-                            preRenderCtx.drawImage(blocks,map[chunkX][chunkY][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + 250,to_screen_coordinate(x,y+z*2).y/5-z*scale/5 + 10,20,20);
+                            preRenderCtx.drawImage(blocks,map[chunkX][chunkY][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + 550,to_screen_coordinate(x,y+z*2).y/5-z*scale/5 + 10,20,20);
                         }
                     }
                 }
@@ -301,7 +302,7 @@ function getPerlinNoise(x,y){
 
     
     testCanvasCtx.fillStyle = "rgb("+perlinNoise+","+perlinNoise+","+perlinNoise+")";
-    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/5 + 500,to_screen_coordinate(x,y).y/5,10,10);
+    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10,5,5);
     
     return perlinNoise
 
