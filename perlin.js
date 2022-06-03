@@ -1,7 +1,9 @@
 'use strict';
+var seed;
+
 let perlin = {
-    rand_vect: function(){
-        let theta = Math.random() * 2 * Math.PI;
+    rand_vect: function(x,y){
+        let theta = (seedRandomizer(seed + x*10 + y*100)) * 2 * Math.PI;
         return {x: Math.cos(theta), y: Math.sin(theta)};
     },
     dot_prod_grid: function(x, y, vx, vy){
@@ -10,7 +12,7 @@ let perlin = {
         if (this.gradients[[vx,vy]]){
             g_vect = this.gradients[[vx,vy]];
         } else {
-            g_vect = this.rand_vect();
+            g_vect = this.rand_vect(x,y);
             this.gradients[[vx, vy]] = g_vect;
         }
         return d_vect.x * g_vect.x + d_vect.y * g_vect.y;
@@ -25,7 +27,10 @@ let perlin = {
         this.gradients = {};
         this.memory = {};
     },
-    get: function(x, y) {
+    get: function(x, y, inputSeed) {
+
+        seed = inputSeed;
+
         if (this.memory.hasOwnProperty([x,y]))
             return this.memory[[x,y]];
         let xf = Math.floor(x);
@@ -42,4 +47,10 @@ let perlin = {
         return v;
     }
 }
+
+function seedRandomizer(mySeed){
+    let newSeed = (Math.sin(mySeed) + 1)/2;
+    return(newSeed);
+}
+
 perlin.seed();

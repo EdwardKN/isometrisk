@@ -7,6 +7,7 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
+var seed = Math.floor(Math.random()*100000);
 
 var map = [];
 var negativeMap = []
@@ -127,99 +128,21 @@ window.addEventListener("keyup",function(e){
 
 function convertCanvasToImage(canvas) {
     var image = new Image();
-    image.src = canvas.toDataURL("image/png");
+    canvas.toBlob(function(blob) {
+            url = URL.createObjectURL(blob);
+            image.onload = function() {
+          // no longer need to read the blob so it's revoked
+          URL.revokeObjectURL(url);
+        };
+
+        image.src = url;
+
+      })
     return image;
-}
-
-function generateMap(){
-    for(var chunkX = 0; chunkX < mapSize; chunkX++){
-        var tmpMap3 = [];
-        for(var chunkY = 0; chunkY < mapSize; chunkY++){
-            var tmpMap2 = [];
-            for(var z = 0; z < 5; z++){
-                let tmpMap1 = []
-                for(var y = 0; y < chunkSize; y++){
-                    let tmpMap = []
-                    for(var x = 0; x < chunkSize; x++){
-                        if(z == 0){
-    
-                            if(getPerlinNoise(x+chunkX*chunkSize,y+chunkY*chunkSize) > 90){
-                                tmpMap.push(4);
-                            }else{
-                                tmpMap.push(0);
-                            }
-                        }
-                        if(z == 1){
-                            if(tmpMap2[z-1][y][x] != 4){
-                                if(Math.random() < 0.1){
-                                    tmpMap.push(1);
-                                }else if(Math.random() < 0.1){
-                                    tmpMap.push(3);
-                                }else if(Math.random() < 0.05){
-                                    tmpMap.push(0);
-                                }else{
-                                    tmpMap.push(-1);
-                                }
-                            }else{
-                                tmpMap.push(-1)
-                            }
-                        }
-
-                    }
-                    tmpMap1.push(tmpMap);
-                }
-                tmpMap2.push(tmpMap1);
-            }
-            tmpMap3.push(tmpMap2);
-        }
-        map.push(tmpMap3);
-    }
-    prerender()
-}
-
-
-
-function prerender(){
-    
-
-    //preRenderCanvas.style.display = "none";
-
-    for(var chunkX = 0; chunkX < mapSize; chunkX++){
-        var tmpchunkArray = [];
-        for(var chunkY = 0; chunkY < mapSize; chunkY++){
-
-            var preRenderCanvas = document.createElement("canvas");
-            var preRenderCtx = preRenderCanvas.getContext("2d");
-            
-            preRenderCanvas.width = 1920;
-            preRenderCanvas.height = 1080;
-
-            for(var z = 0; z < 5; z++){
-                for(var y = 0; y < chunkSize; y++){
-                    for(var x = 0; x < chunkSize; x++){
-                        if(map[chunkX][chunkY][z][y][x] >= 0){
-                            preRenderCtx.drawImage(blocks,map[chunkX][chunkY][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
-                        }
-                    }
-                }
-            }
-
-
-            image = convertCanvasToImage(preRenderCanvas);
-
-            tmpchunkArray.push(image);
-            
-
-
-        }
-        chunkArray.push(tmpchunkArray)
-
-    }
 }
 
 function generateChunk(chunkX,chunkY){
     
-    console.log(chunkY,chunkX)
     for(let x = 0; x <= chunkY; x++){
         let tmp1 = []
         for(let y = 0; y <= chunkX; y++){
@@ -244,7 +167,6 @@ function generateChunk(chunkX,chunkY){
     }
 
     
-    console.log("hej")
     var tmpMap2 = [];
     for(var z = 0; z < 5; z++){
         let tmpMap1 = []
@@ -253,7 +175,7 @@ function generateChunk(chunkX,chunkY){
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize) > 90){
+                    if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize) > 50){
                         tmpMap.push(4);
                     }else{
                         tmpMap.push(0);
@@ -261,11 +183,11 @@ function generateChunk(chunkX,chunkY){
                 }
                 if(z == 1){
                     if(tmpMap2[z-1][y][x] != 4){
-                        if(Math.random() < 0.1){
+                        if(seedRandomizer(seed + (x + chunkX*chunkSize)*10 + (y+ chunkY*chunkSize)*100) < 0.03){
                             tmpMap.push(1);
-                        }else if(Math.random() < 0.1){
+                        }else if(seedRandomizer(seed + (x + chunkX*chunkSize)*1000 + (y+ chunkY*chunkSize)*10) < 0.01){
                             tmpMap.push(3);
-                        }else if(Math.random() < 0.05){
+                        }else if(seedRandomizer(seed + (x + chunkX*chunkSize)*10000 + (y+ chunkY*chunkSize)*1000) < 0.05){
                             tmpMap.push(0);
                         }else{
                             tmpMap.push(-1);
@@ -286,8 +208,8 @@ function generateChunk(chunkX,chunkY){
     var preRenderCanvas = document.createElement("canvas");
     var preRenderCtx = preRenderCanvas.getContext("2d");
     
-    preRenderCanvas.width = 1920;
-    preRenderCanvas.height = 1080;
+    preRenderCanvas.width = 1920/2;
+    preRenderCanvas.height = 1080/2;
 
     for(var z = 0; z < 5; z++){
         for(var y = 0; y < chunkSize; y++){
@@ -310,6 +232,96 @@ function generateChunk(chunkX,chunkY){
     
 } 
 
+function generateNegativeChunk(chunkX,chunkY){
+    
+    for(let x = 0; x <= chunkY; x++){
+        let tmp1 = []
+        for(let y = 0; y <= chunkX; y++){
+            try{
+
+    
+                if(typeof map[x][y]){}
+            }catch{
+                tmp1.push(0)
+            }
+            try{
+
+
+                if(chunkArray[x][y]){}
+            }catch{
+                tmp1.push(0)
+            }
+        }
+        negativeMap.push(tmp1)
+        negativechunkArray.push(tmp1)
+
+    }
+
+    
+    var tmpMap2 = [];
+    for(var z = 0; z < 5; z++){
+        let tmpMap1 = []
+        for(var y = 0; y < chunkSize; y++){
+            let tmpMap = []
+            for(var x = 0; x < chunkSize; x++){
+                if(z == 0){
+
+                    if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(-chunkX)*chunkSize) > 50){
+                        tmpMap.push(4);
+                    }else{
+                        tmpMap.push(0);
+                    }
+                }
+                if(z == 1){
+                    if(tmpMap2[z-1][y][x] != 4){
+                        if(seedRandomizer(seed + (x + (-chunkX)*chunkSize)*10 + (y+ (-chunkY)*chunkSize)*100) < 0.03){
+                            tmpMap.push(1);
+                        }else if(seedRandomizer(seed + (x + (-chunkX)*chunkSize)*1000 + (y+ (-chunkY)*chunkSize)*10) < 0.01){
+                            tmpMap.push(3);
+                        }else if(seedRandomizer(seed + (x + (-chunkX)*chunkSize)*10000 + (y+ (-chunkY)*chunkSize)*1000) < 0.05){
+                            tmpMap.push(0);
+                        }else{
+                            tmpMap.push(-1);
+                        }
+                    }else{
+                        tmpMap.push(-1)
+                    }
+                }
+
+            }
+            tmpMap1.push(tmpMap);
+        }
+        tmpMap2.push(tmpMap1);
+    }
+
+    negativeMap[chunkY][chunkX] = tmpMap2;
+
+    var preRenderCanvas = document.createElement("canvas");
+    var preRenderCtx = preRenderCanvas.getContext("2d");
+    
+    preRenderCanvas.width = 1920/2;
+    preRenderCanvas.height = 1080/2;
+
+    for(var z = 0; z < 5; z++){
+        for(var y = 0; y < chunkSize; y++){
+            for(var x = 0; x < chunkSize; x++){
+                if(negativeMap[chunkY][chunkX][z][y][x] >= 0){
+                    preRenderCtx.drawImage(blocks,negativeMap[chunkY][chunkX][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
+                }
+            }
+        }
+    }
+
+
+    image = convertCanvasToImage(preRenderCanvas);
+
+
+
+    negativechunkArray[chunkY][chunkX] = image;
+
+    return image
+    
+} 
 
 function to_screen_coordinate(x,y){
     return {
@@ -378,6 +390,13 @@ function show_map(){
                     generateChunk(x,y)
                 }
                 
+            }else{
+                try{
+                    backCtx.drawImage(negativechunkArray[makePositive(y)][makePositive(x)],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                }catch{
+                    
+                    generateNegativeChunk(makePositive(x),makePositive(y))
+                }  
             }
         }
     }
@@ -391,6 +410,13 @@ function show_map(){
                     generateChunk(x,y)                    
                 
                 }
+            }else{
+                try{
+                    backCtx.drawImage(negativechunkArray[makePositive(y)][makePositive(x)],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                }catch{
+                    generateNegativeChunk(makePositive(x),makePositive(y))                 
+                
+                }
             }
         }
     }
@@ -399,9 +425,7 @@ function show_map(){
 }
 
 
-setTimeout(() => {
-    generateMap()
-}, 200);
+
 setTimeout(() => {
     update()
 }, 400);
@@ -467,15 +491,19 @@ testCanvas.width = 1920;
 testCanvas.height = 1080;
 
 function getPerlinNoise(x,y){
-    let perlinNoise = makePositive(parseInt(perlin.get(x/50, y/50) * 255))
+    let perlinNoise = makePositive(parseInt(perlin.get(x/30, y/30,seed) * 255))
     if(perlinNoise < 0){
         perlinNoise = 0;
     }   
 
     
     //testCanvasCtx.fillStyle = "rgba("+perlinNoise+","+perlinNoise+","+perlinNoise+","+1+")";
-    //testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/50 + 500,to_screen_coordinate(x,y).y/50,1,1);
+    //testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10 + 500,5,5);
     
     return perlinNoise
 
+}
+function seedRandomizer(mySeed){
+    let newSeed = (Math.sin(mySeed) + 1)/2;
+    return(newSeed);
 }
