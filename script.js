@@ -2,12 +2,12 @@ var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
 
 
-backCanvas.width = 5920;
-backCanvas.height = 5080
+backCanvas.width = 1920;
+backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
-var seed = 1//Math.floor(Math.random()*100000);
+var seed = Math.floor(Math.random()*100000);
 
 var map = [];
 var negativeMap = []
@@ -177,6 +177,8 @@ function generateChunk(chunkX,chunkY){
 
                     if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+1,70) > 70){
                         tmpMap.push(4);
+                    }else if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+1,70) > 50){
+                        tmpMap.push(6);
                     }else{
                         tmpMap.push(0);
                     }
@@ -185,13 +187,15 @@ function generateChunk(chunkX,chunkY){
                     console.log(tmpMap)
                     tmpMap.push(-1);
                     if(tmpMap2[z-1][y][x] != 4){
-                        if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+5,30) * seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 100){
+                        if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+5,50) * seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 70){
                             tmpMap[x] = (3);
                         }
-                        if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20) > 50){
-                            tmpMap[x] = (0);
-                        }else if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20)> 40){
-                            tmpMap[x] = (1);
+                        if(tmpMap2[z-1][y][x] != 6){
+                            if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20) > 50){
+                                tmpMap[x] = (0);
+                            }else if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20)> 40){
+                                tmpMap[x] = (1);
+                            }
                         }
                     }else{
                         tmpMap.push(-1)
@@ -267,8 +271,10 @@ function generateNegativeChunk(chunkX,chunkY){
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+1,70) > 70){
+                    if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+1,70) > 70){
                         tmpMap.push(4);
+                    }else if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+1,70) > 50){
+                        tmpMap.push(6);
                     }else{
                         tmpMap.push(0);
                     }
@@ -277,14 +283,17 @@ function generateNegativeChunk(chunkX,chunkY){
                     console.log(tmpMap)
                     tmpMap.push(-1);
                     if(tmpMap2[z-1][y][x] != 4){
-                        if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+5,30) * seedRandomizer(seed+5 + (x + (-chunkX)*chunkSize)*3000 + (-y+ (-chunkY)*chunkSize)*200) > 100){
+
+                        if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+5,30) * seedRandomizer(seed+5 + (x + (-chunkX)*chunkSize)*3000 + (-y+ (-chunkY)*chunkSize)*200) > 70){
                             tmpMap[x] = (3);
                         }
-                        if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+2,20) > 50){
-                            tmpMap[x] = (0);
-                        }else if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+2,20)> 40){
-                            tmpMap[x] = (1);
-                        }
+                        if(tmpMap2[z-1][y][x] != 6){
+                            if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+2,20) > 50){
+                                tmpMap[x] = (0);
+                            }else if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+2,20)> 40){
+                                tmpMap[x] = (1);
+                            }
+                    }
                     }else{
                         tmpMap.push(-1)
                     }
@@ -333,7 +342,6 @@ function to_screen_coordinate(x,y){
 }
 
 function invert_matrix(a, b, c, d) {
-  // Determinant 
   const det = (1 / (a * d - b * c));
   
   return {
