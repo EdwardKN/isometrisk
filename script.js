@@ -2,12 +2,12 @@ var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
 
 
-backCanvas.width = 1920;
-backCanvas.height = 1080
+backCanvas.width = 5920;
+backCanvas.height = 5080
 
 backCtx.imageSmoothingEnabled = false;
 
-var seed = Math.floor(Math.random()*100000);
+var seed = 1//Math.floor(Math.random()*100000);
 
 var map = [];
 var negativeMap = []
@@ -175,22 +175,23 @@ function generateChunk(chunkX,chunkY){
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize) > 50){
+                    if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+1,70) > 70){
                         tmpMap.push(4);
                     }else{
                         tmpMap.push(0);
                     }
                 }
                 if(z == 1){
+                    console.log(tmpMap)
+                    tmpMap.push(-1);
                     if(tmpMap2[z-1][y][x] != 4){
-                        if(seedRandomizer(seed + (x + chunkX*chunkSize)*10 + (y+ chunkY*chunkSize)*100) < 0.03){
-                            tmpMap.push(1);
-                        }else if(seedRandomizer(seed + (x + chunkX*chunkSize)*1000 + (y+ chunkY*chunkSize)*10) < 0.01){
-                            tmpMap.push(3);
-                        }else if(seedRandomizer(seed + (x + chunkX*chunkSize)*10000 + (y+ chunkY*chunkSize)*1000) < 0.05){
-                            tmpMap.push(0);
-                        }else{
-                            tmpMap.push(-1);
+                        if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+5,30) * seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 100){
+                            tmpMap[x] = (3);
+                        }
+                        if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20) > 50){
+                            tmpMap[x] = (0);
+                        }else if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20)> 40){
+                            tmpMap[x] = (1);
                         }
                     }else{
                         tmpMap.push(-1)
@@ -266,22 +267,23 @@ function generateNegativeChunk(chunkX,chunkY){
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(-chunkX)*chunkSize) > 50){
+                    if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+1,70) > 70){
                         tmpMap.push(4);
                     }else{
                         tmpMap.push(0);
                     }
                 }
                 if(z == 1){
+                    console.log(tmpMap)
+                    tmpMap.push(-1);
                     if(tmpMap2[z-1][y][x] != 4){
-                        if(seedRandomizer(seed + (x + (-chunkX)*chunkSize)*10 + (y+ (-chunkY)*chunkSize)*100) < 0.03){
-                            tmpMap.push(1);
-                        }else if(seedRandomizer(seed + (x + (-chunkX)*chunkSize)*1000 + (y+ (-chunkY)*chunkSize)*10) < 0.01){
-                            tmpMap.push(3);
-                        }else if(seedRandomizer(seed + (x + (-chunkX)*chunkSize)*10000 + (y+ (-chunkY)*chunkSize)*1000) < 0.05){
-                            tmpMap.push(0);
-                        }else{
-                            tmpMap.push(-1);
+                        if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+5,30) * seedRandomizer(seed+5 + (x + (-chunkX)*chunkSize)*3000 + (-y+ (-chunkY)*chunkSize)*200) > 100){
+                            tmpMap[x] = (3);
+                        }
+                        if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+2,20) > 50){
+                            tmpMap[x] = (0);
+                        }else if(getPerlinNoise(x+(-chunkY)*chunkSize,-y+(-chunkX)*chunkSize,seed+2,20)> 40){
+                            tmpMap[x] = (1);
                         }
                     }else{
                         tmpMap.push(-1)
@@ -490,8 +492,8 @@ var testCanvasCtx = testCanvas.getContext("2d");
 testCanvas.width = 1920;
 testCanvas.height = 1080;
 
-function getPerlinNoise(x,y){
-    let perlinNoise = makePositive(parseInt(perlin.get(x/30, y/30,seed) * 255))
+function getPerlinNoise(x,y,perlinSeed, resolution){
+    let perlinNoise = makePositive(parseInt(perlin.get(x/resolution, y/resolution,perlinSeed) * 255))
     if(perlinNoise < 0){
         perlinNoise = 0;
     }   
