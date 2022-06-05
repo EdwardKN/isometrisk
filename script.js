@@ -184,7 +184,6 @@ function generateChunk(chunkX,chunkY){
                     }
                 }
                 if(z == 1){
-                    console.log(tmpMap)
                     tmpMap.push(-1);
                     if(tmpMap2[z-1][y][x] != 4){
                         if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+5,50) * seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 70){
@@ -280,7 +279,6 @@ function generateNegativeChunk(chunkX,chunkY){
                     }
                 }
                 if(z == 1){
-                    console.log(tmpMap)
                     tmpMap.push(-1);
                     if(tmpMap2[z-1][y][x] != 4){
 
