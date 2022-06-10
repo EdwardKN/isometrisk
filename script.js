@@ -2,8 +2,8 @@ var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
 
 
-backCanvas.width = 5920;
-backCanvas.height = 5080
+backCanvas.width = 1920;
+backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
