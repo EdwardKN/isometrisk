@@ -7,7 +7,7 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
-var seed = 3//Math.floor(Math.random()*100000);
+var seed = Math.floor(Math.random()*100000);
 
 var map = {};
 
