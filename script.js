@@ -2,8 +2,8 @@ var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
 
 
-backCanvas.width = 1920;
-backCanvas.height = 1080
+backCanvas.width = 5920;
+backCanvas.height = 5080
 
 backCtx.imageSmoothingEnabled = false;
 
@@ -148,9 +148,9 @@ function generateChunk(chunkX,chunkY){
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,70) > 70){
+                    if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,250) > 140){
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = 4
-                    }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,70) > 50){
+                    }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,250) > 120){
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = 6
                     }else{
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = 0
@@ -160,7 +160,7 @@ function generateChunk(chunkX,chunkY){
                     map[`${chunkY},${chunkX},${z},${x},${y}`] = -1
                     if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] != 4){
                         if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+5,10)  > 80){
-                            if(seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 0.9){
+                            if(seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 0.95){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 3
                             }
                         }
@@ -172,7 +172,8 @@ function generateChunk(chunkX,chunkY){
                             }
                         }
                     }else{
-                        map[`${chunkY},${chunkX},${z},${x},${y}`] = -1                    }
+                        map[`${chunkY},${chunkX},${z},${x},${y}`] = -1                    
+                    }
                 }
 
             }
@@ -371,8 +372,8 @@ function makePositive(a){
 var testCanvas = document.getElementById("canvas");
 var testCanvasCtx = testCanvas.getContext("2d");
 
-testCanvas.width = 1920;
-testCanvas.height = 1080;
+testCanvas.width = backCanvas.width;
+testCanvas.height = backCanvas.height;
 
 function getPerlinNoise(x,y,perlinSeed, resolution){
     noise.seed(perlinSeed);
@@ -382,12 +383,13 @@ function getPerlinNoise(x,y,perlinSeed, resolution){
     if(value < 0){
         value = 0;
     }   
+    value = Math.abs(value) * 255
 
     
-    //testCanvasCtx.fillStyle = "rgba("+perlinNoise+","+perlinNoise+","+perlinNoise+","+1+")";
+    //testCanvasCtx.fillStyle = "rgba("+value+","+value+","+value+","+1+")";
     //testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10 + 500,5,5);
     
-    return Math.abs(value) * 256;
+    return value;
 
 }
 function seedRandomizer(mySeed){
