@@ -9,13 +9,9 @@ backCtx.imageSmoothingEnabled = false;
 
 var seed = Math.floor(Math.random()*100000);
 
-var map = [];
-var negativeMap = []
+var map = {};
 
-var chunkArray = [];
-var negativechunkArray = [];
-
-var doneChunks = [];
+var chunkList = {};
 
 const chunkSize = 45;
 const mapSize = 0;
@@ -43,6 +39,11 @@ window.addEventListener("mousemove", function(e){
 
 window.addEventListener("keydown",function(e){
     console.log(e.keyCode);
+
+    if(e.keyCode = 70){
+        var parentDiv = document.getElementById("content");
+        parentDiv.requestFullscreen();
+    }
     if(e.keyCode == 87){
         if(player.direction == 4){
             player.direction = 5;
@@ -142,72 +143,42 @@ function convertCanvasToImage(canvas) {
 }
 
 function generateChunk(chunkX,chunkY){
-    
-    for(let x = 0; x <= chunkY; x++){
-        let tmp1 = []
-        for(let y = 0; y <= chunkX; y++){
-            try{
-
-    
-                if(typeof map[x][y]){}
-            }catch{
-                tmp1.push(0)
-            }
-            try{
-
-
-                if(chunkArray[x][y]){}
-            }catch{
-                tmp1.push(0)
-            }
-        }
-        map.push(tmp1)
-        chunkArray.push(tmp1)
-
-    }
-
-    
-    var tmpMap2 = [];
     for(var z = 0; z < 5; z++){
-        let tmpMap1 = []
         for(var y = 0; y < chunkSize; y++){
-            let tmpMap = []
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+1,70) > 70){
-                        tmpMap.push(4);
-                    }else if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+1,70) > 50){
-                        tmpMap.push(6);
+                    if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,70) > 70){
+                        map[`${chunkY},${chunkX},${z},${x},${y}`] = 4
+                    }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,70) > 50){
+                        map[`${chunkY},${chunkX},${z},${x},${y}`] = 6
                     }else{
-                        tmpMap.push(0);
+                        map[`${chunkY},${chunkX},${z},${x},${y}`] = 0
                     }
                 }
                 if(z == 1){
-                    tmpMap.push(-1);
-                    if(tmpMap2[z-1][y][x] != 4){
-                        if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+5,50) * seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 70){
-                            tmpMap[x] = (3);
+                    map[`${chunkY},${chunkX},${z},${x},${y}`] = -1
+                    if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] != 4){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+5,10)  > 80){
+                            if(seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 0.9){
+                                map[`${chunkY},${chunkX},${z},${x},${y}`] = 3
+                            }
                         }
-                        if(tmpMap2[z-1][y][x] != 6){
-                            if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20) > 50){
-                                tmpMap[x] = (0);
-                            }else if(getPerlinNoise(x+chunkY*chunkSize,y+chunkX*chunkSize,seed+2,20)> 40){
-                                tmpMap[x] = (1);
+                        if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] != 6){
+                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,20) > 50){
+                                map[`${chunkY},${chunkX},${z},${x},${y}`] = 0;
+                            }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,20)> 40){
+                                map[`${chunkY},${chunkX},${z},${x},${y}`] = 1;
                             }
                         }
                     }else{
-                        tmpMap.push(-1)
-                    }
+                        map[`${chunkY},${chunkX},${z},${x},${y}`] = -1                    }
                 }
 
             }
-            tmpMap1.push(tmpMap);
         }
-        tmpMap2.push(tmpMap1);
     }
 
-    map[chunkY][chunkX] = tmpMap2;
 
     var preRenderCanvas = document.createElement("canvas");
     var preRenderCtx = preRenderCanvas.getContext("2d");
@@ -218,8 +189,8 @@ function generateChunk(chunkX,chunkY){
     for(var z = 0; z < 5; z++){
         for(var y = 0; y < chunkSize; y++){
             for(var x = 0; x < chunkSize; x++){
-                if(map[chunkY][chunkX][z][y][x] >= 0){
-                    preRenderCtx.drawImage(blocks,map[chunkY][chunkX][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
+                if(map[`${chunkY},${chunkX},${z},${x},${y}`] >= 0){
+                    preRenderCtx.drawImage(blocks,map[`${chunkY},${chunkX},${z},${x},${y}`]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
                 }
             }
         }
@@ -230,107 +201,12 @@ function generateChunk(chunkX,chunkY){
 
 
 
-    chunkArray[chunkY][chunkX] = image;
+    chunkList[`${chunkY},${chunkX}`] = image;
 
     return image
     
 } 
 
-function generateNegativeChunk(chunkX,chunkY){
-    
-    for(let x = 0; x <= chunkY; x++){
-        let tmp1 = []
-        for(let y = 0; y <= chunkX; y++){
-            try{
-
-    
-                if(typeof map[x][y]){}
-            }catch{
-                tmp1.push(0)
-            }
-            try{
-
-
-                if(chunkArray[x][y]){}
-            }catch{
-                tmp1.push(0)
-            }
-        }
-        negativeMap.push(tmp1)
-        negativechunkArray.push(tmp1)
-
-    }
-
-    
-    var tmpMap2 = [];
-    for(var z = 0; z < 5; z++){
-        let tmpMap1 = []
-        for(var y = 0; y < chunkSize; y++){
-            let tmpMap = []
-            for(var x = 0; x < chunkSize; x++){
-                if(z == 0){
-
-                    if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+1,70) > 70){
-                        tmpMap.push(4);
-                    }else if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+1,70) > 50){
-                        tmpMap.push(6);
-                    }else{
-                        tmpMap.push(0);
-                    }
-                }
-                if(z == 1){
-                    tmpMap.push(-1);
-                    if(tmpMap2[z-1][y][x] != 4){
-
-                        if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+5,30) * seedRandomizer(seed+5 + (x + (-chunkX)*chunkSize)*3000 + (-y+ (-chunkY)*chunkSize)*200) > 70){
-                            tmpMap[x] = (3);
-                        }
-                        if(tmpMap2[z-1][y][x] != 6){
-                            if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+2,20) > 50){
-                                tmpMap[x] = (0);
-                            }else if(getPerlinNoise(x+(-chunkY)*chunkSize,y+(chunkX)*chunkSize,seed+2,20)> 40){
-                                tmpMap[x] = (1);
-                            }
-                    }
-                    }else{
-                        tmpMap.push(-1)
-                    }
-                }
-
-            }
-            tmpMap1.push(tmpMap);
-        }
-        tmpMap2.push(tmpMap1);
-    }
-
-    negativeMap[chunkY][chunkX] = tmpMap2;
-
-    var preRenderCanvas = document.createElement("canvas");
-    var preRenderCtx = preRenderCanvas.getContext("2d");
-    
-    preRenderCanvas.width = 1920/2;
-    preRenderCanvas.height = 1080/2;
-
-    for(var z = 0; z < 5; z++){
-        for(var y = 0; y < chunkSize; y++){
-            for(var x = 0; x < chunkSize; x++){
-                if(negativeMap[chunkY][chunkX][z][y][x] >= 0){
-                    preRenderCtx.drawImage(blocks,negativeMap[chunkY][chunkX][z][x][y]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
-                }
-            }
-        }
-    }
-
-
-    image = convertCanvasToImage(preRenderCanvas);
-
-
-
-    negativechunkArray[chunkY][chunkX] = image;
-
-    return image
-    
-} 
 
 function to_screen_coordinate(x,y){
     return {
@@ -392,7 +268,7 @@ function show_map(){
         for(var y = listOfcoordinates.first.y; y <= listOfcoordinates.second.y; y++){
             if(x >= 0 && y >= 0){
                 try{
-                    backCtx.drawImage(chunkArray[y][x],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
                 }catch{
                     
                     generateChunk(x,y)
@@ -400,10 +276,10 @@ function show_map(){
                 
             }else{
                 try{
-                    backCtx.drawImage(negativechunkArray[makePositive(y)][makePositive(x)],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
                 }catch{
                     
-                    generateNegativeChunk(makePositive(x),makePositive(y))
+                    generateChunk(x,y)
                 }  
             }
         }
@@ -413,16 +289,16 @@ function show_map(){
             if(x >= 0 && y >= 0){
                 try{
 
-                    backCtx.drawImage(chunkArray[y][x],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
                 }catch{
                     generateChunk(x,y)                    
                 
                 }
             }else{
                 try{
-                    backCtx.drawImage(negativechunkArray[makePositive(y)][makePositive(x)],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
                 }catch{
-                    generateNegativeChunk(makePositive(x),makePositive(y))                 
+                    generateChunk(x,y)
                 
                 }
             }
