@@ -7,7 +7,7 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
-var seed = Math.floor(Math.random()*100000);
+var seed = 3//Math.floor(Math.random()*100000);
 
 var map = {};
 
@@ -40,7 +40,7 @@ window.addEventListener("mousemove", function(e){
 window.addEventListener("keydown",function(e){
     console.log(e.keyCode);
 
-    if(e.keyCode = 70){
+    if(e.keyCode == 70){
         var parentDiv = document.getElementById("content");
         parentDiv.requestFullscreen();
     }
@@ -375,16 +375,19 @@ testCanvas.width = 1920;
 testCanvas.height = 1080;
 
 function getPerlinNoise(x,y,perlinSeed, resolution){
-    let perlinNoise = makePositive(parseInt(perlin.get(x/resolution, y/resolution,perlinSeed) * 255))
-    if(perlinNoise < 0){
-        perlinNoise = 0;
+    noise.seed(perlinSeed);
+
+    var value = noise.simplex2(x / resolution, y / resolution);
+
+    if(value < 0){
+        value = 0;
     }   
 
     
     //testCanvasCtx.fillStyle = "rgba("+perlinNoise+","+perlinNoise+","+perlinNoise+","+1+")";
     //testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10 + 500,5,5);
     
-    return perlinNoise
+    return Math.abs(value) * 256;
 
 }
 function seedRandomizer(mySeed){
