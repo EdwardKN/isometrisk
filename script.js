@@ -2,20 +2,23 @@ var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
 
 
-backCanvas.width = 5920;
-backCanvas.height = 5080
+backCanvas.width = 1920;
+backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
 
 
-var seed = 3//Math.floor(Math.random()*100000);
 
 var map = {};
 
-var chunkList = {};
+var chunkList = {
+    seed:Math.floor(Math.random()*100000)
+};
 
-const chunkSize = 45;
+
+
+const chunkSize = 16;
 const mapSize = 0;
 
 const scale = 100;
@@ -25,7 +28,7 @@ var player = {
     y: 0,
     z: 0,
     rotation: 0,
-    speed: 2,
+    speed: 20,
     direction: 0
 }
 
@@ -149,9 +152,9 @@ function generateChunk(chunkX,chunkY){
             for(var x = 0; x < chunkSize; x++){
                 if(z == 0){
 
-                    if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,250) > 140){
+                    if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+1,250) > 140){
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = 4
-                    }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+1,250) > 120){
+                    }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+1,250) > 120){
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = 6
                     }else{
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = 0
@@ -160,20 +163,20 @@ function generateChunk(chunkX,chunkY){
                 if(z == 1){
                     map[`${chunkY},${chunkX},${z},${x},${y}`] = -1
                     if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] != 4){
-                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+5,10)  > 80){
-                            if(seedRandomizer(seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 0.95){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+5,10)  > 80){
+                            if(seedRandomizer(chunkList.seed+5 + (x + (chunkX)*chunkSize)*3000 + (y+ (chunkY)*chunkSize)*200) > 0.95){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 3
                             }
                         }
                         if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] != 6){
-                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+3,60)> 100){
+                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+3,60)> 100){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 0;
 
-                            }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+3,60)> 0){
+                            }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+3,60)> 0){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 1;
                             } 
 
-                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,90) > 150){
+                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+2,90) > 150){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
                             } 
                         }
@@ -183,21 +186,21 @@ function generateChunk(chunkX,chunkY){
                 }
                 if(z == 2){
                     if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] == 5){
-                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,80) > 100){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+2,80) > 100){
                             map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
                         }
                     }
                 }
                 if(z == 3){
                     if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] == 5){
-                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,80) > 150){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+2,80) > 150){
                             map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
                         }
                     }
                 }
                 if(z == 4){
                     if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] == 5){
-                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,80) > 220){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,chunkList.seed+2,80) > 220){
                             map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
                         }
                     }
@@ -273,12 +276,12 @@ function show_map(){
     
     let listOfcoordinates = {
         third:{
-            x: Math.floor(to_grid_coordinate(0+player.x*5,200+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(0+player.x*5,200+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate(-1000+player.x*5,-1920+player.y*5).x/chunkSize),
+            y: Math.floor(to_grid_coordinate(-1000+player.x*5,-1920+player.y*5).y/chunkSize)
         },
         fourth:{
-            x: Math.floor(to_grid_coordinate(1080+player.x*5,0+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(1080+player.x*5,0+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate(1000+player.x*5,1920+player.y*5).x/chunkSize),
+            y: Math.floor(to_grid_coordinate(1000+player.x*5,1920+player.y*5).y/chunkSize)
         }
     }
 
@@ -375,9 +378,9 @@ function getPerlinNoise(x,y,perlinSeed, resolution){
     }   
     value = Math.abs(value) * 255
 
-    
+    testCanvasCtx.globalAlpha = 0.05;
     testCanvasCtx.fillStyle = "rgba("+value+","+value+","+value+","+1+")";
-    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10 + 500,5,5);
+    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/50 + 500,to_screen_coordinate(x,y).y/50 + 500,5,1);
     
     return value;
 
