@@ -1,3 +1,3 @@
 # testing
 
-https://edwardkn.github.io/testing/
+https://edwardkn.github.io/isometrisk/
