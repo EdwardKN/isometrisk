@@ -7,6 +7,8 @@ backCanvas.height = 1080
 
 backCtx.imageSmoothingEnabled = false;
 
+
+
 var seed = Math.floor(Math.random()*100000);
 
 var map = {};
@@ -132,13 +134,12 @@ function convertCanvasToImage(canvas) {
     canvas.toBlob(function(blob) {
             url = URL.createObjectURL(blob);
             image.onload = function() {
-          // no longer need to read the blob so it's revoked
           URL.revokeObjectURL(url);
         };
 
         image.src = url;
 
-      })
+    })
     return image;
 }
 
@@ -184,14 +185,14 @@ function generateChunk(chunkX,chunkY){
     var preRenderCanvas = document.createElement("canvas");
     var preRenderCtx = preRenderCanvas.getContext("2d");
     
-    preRenderCanvas.width = 1920/2;
+    preRenderCanvas.width = 1920/2 - 60;
     preRenderCanvas.height = 1080/2;
 
     for(var z = 0; z < 5; z++){
         for(var y = 0; y < chunkSize; y++){
             for(var x = 0; x < chunkSize; x++){
                 if(map[`${chunkY},${chunkX},${z},${x},${y}`] >= 0){
-                    preRenderCtx.drawImage(blocks,map[`${chunkY},${chunkX},${z},${x},${y}`]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5,20,20);
+                    preRenderCtx.drawImage(blocks,map[`${chunkY},${chunkX},${z},${x},${y}`]*20,0,20,20,to_screen_coordinate(x,y).x/5 + chunkSize*10 - 10,to_screen_coordinate(x,y+z*2).y/5-z*scale/5 + 80,20,20);
                 }
             }
         }
