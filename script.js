@@ -247,63 +247,27 @@ function show_map(){
 
     
     let listOfcoordinates = {
-        first:{
-            x: Math.floor(to_grid_coordinate(0+player.x*5,0+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(0+player.x*5,0+player.y*5).y/chunkSize)
-        }
-        ,second:{
-            x: Math.floor(to_grid_coordinate(1920+player.x*5,1080+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(1920+player.x*5,1080+player.y*5).y/chunkSize)
-        }
-        ,third:{
-            x: Math.floor(to_grid_coordinate(0+player.x*5,1080+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(0+player.x*5,1080+player.y*5).y/chunkSize)
+        third:{
+            x: Math.floor(to_grid_coordinate(0+player.x*5,200+player.y*5).x/chunkSize),
+            y: Math.floor(to_grid_coordinate(0+player.x*5,200+player.y*5).y/chunkSize)
         },
         fourth:{
-            x: Math.floor(to_grid_coordinate(1920+player.x*5,0+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(1920+player.x*5,0+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate(1080+player.x*5,0+player.y*5).x/chunkSize),
+            y: Math.floor(to_grid_coordinate(1080+player.x*5,0+player.y*5).y/chunkSize)
         }
     }
 
-    
-    for(var x = listOfcoordinates.first.x; x <= listOfcoordinates.second.x; x++){
-        for(var y = listOfcoordinates.first.y; y <= listOfcoordinates.second.y; y++){
-            if(x >= 0 && y >= 0){
-                try{
-                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
-                }catch{
-                    
-                    generateChunk(x,y)
-                }
-                
-            }else{
-                try{
-                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
-                }catch{
-                    
-                    generateChunk(x,y)
-                }  
-            }
-        }
-    }
+
     for(var x = listOfcoordinates.third.x-1; x <= listOfcoordinates.fourth.x+1; x++){
         for(var y = listOfcoordinates.third.y-1; y <= listOfcoordinates.fourth.y+1; y++){
-            if(x >= 0 && y >= 0){
-                try{
+            try{
 
-                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
-                }catch{
-                    generateChunk(x,y)                    
-                
-                }
-            }else{
-                try{
-                    backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
-                }catch{
-                    generateChunk(x,y)
-                
-                }
+                backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+            }catch{
+                generateChunk(x,y)                    
+            
             }
+            
         }
     }
 
