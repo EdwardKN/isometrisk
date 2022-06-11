@@ -2,14 +2,14 @@ var backCanvas = document.getElementById("backCanvas");
 var backCtx = backCanvas.getContext("2d");
 
 
-backCanvas.width = 1920;
-backCanvas.height = 1080
+backCanvas.width = 5920;
+backCanvas.height = 5080
 
 backCtx.imageSmoothingEnabled = false;
 
 
 
-var seed = Math.floor(Math.random()*100000);
+var seed = 3//Math.floor(Math.random()*100000);
 
 var map = {};
 
@@ -166,17 +166,42 @@ function generateChunk(chunkX,chunkY){
                             }
                         }
                         if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] != 6){
-                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,20) > 50){
+                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+3,60)> 100){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 0;
-                            }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,20)> 40){
+
+                            }else if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+3,60)> 0){
                                 map[`${chunkY},${chunkX},${z},${x},${y}`] = 1;
-                            }
+                            } 
+
+                            if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,90) > 150){
+                                map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
+                            } 
                         }
                     }else{
                         map[`${chunkY},${chunkX},${z},${x},${y}`] = -1                    
                     }
                 }
-
+                if(z == 2){
+                    if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] == 5){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,80) > 100){
+                            map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
+                        }
+                    }
+                }
+                if(z == 3){
+                    if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] == 5){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,80) > 150){
+                            map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
+                        }
+                    }
+                }
+                if(z == 4){
+                    if(map[`${chunkY},${chunkX},${z-1},${x},${y}`] == 5){
+                        if(getPerlinNoise(y+chunkY*chunkSize,x+chunkX*chunkSize,seed+2,80) > 220){
+                            map[`${chunkY},${chunkX},${z},${x},${y}`] = 5;
+                        }
+                    }
+                }
             }
         }
     }
@@ -351,8 +376,8 @@ function getPerlinNoise(x,y,perlinSeed, resolution){
     value = Math.abs(value) * 255
 
     
-    //testCanvasCtx.fillStyle = "rgba("+value+","+value+","+value+","+1+")";
-    //testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10 + 500,5,5);
+    testCanvasCtx.fillStyle = "rgba("+value+","+value+","+value+","+1+")";
+    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/10 + 500,to_screen_coordinate(x,y).y/10 + 500,5,5);
     
     return value;
 
