@@ -18,7 +18,7 @@ var chunkList = {
 
 
 
-const chunkSize = 16;
+const chunkSize = 32;
 const mapSize = 0;
 
 const scale = 100;
@@ -28,7 +28,7 @@ var player = {
     y: 0,
     z: 0,
     rotation: 0,
-    speed: 20,
+    speed: 4,
     direction: 0
 }
 
@@ -276,12 +276,12 @@ function show_map(){
     
     let listOfcoordinates = {
         third:{
-            x: Math.floor(to_grid_coordinate(-1000+player.x*5,-1920+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(-1000+player.x*5,-1920+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate(-500+player.x*5,-1020+player.y*5).x/chunkSize),
+            y: Math.floor(to_grid_coordinate(-500+player.x*5,-1020+player.y*5).y/chunkSize)
         },
         fourth:{
-            x: Math.floor(to_grid_coordinate(1000+player.x*5,1920+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(1000+player.x*5,1920+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate(500+player.x*5,1020+player.y*5).x/chunkSize),
+            y: Math.floor(to_grid_coordinate(500+player.x*5,1020+player.y*5).y/chunkSize)
         }
     }
 
@@ -378,9 +378,9 @@ function getPerlinNoise(x,y,perlinSeed, resolution){
     }   
     value = Math.abs(value) * 255
 
-    testCanvasCtx.globalAlpha = 0.05;
-    testCanvasCtx.fillStyle = "rgba("+value+","+value+","+value+","+1+")";
-    testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/50 + 500,to_screen_coordinate(x,y).y/50 + 500,5,1);
+    //testCanvasCtx.globalAlpha = 0.05;
+    //testCanvasCtx.fillStyle = "rgba("+value+","+value+","+value+","+1+")";
+    //testCanvasCtx.fillRect(-to_screen_coordinate(x,y).x/50 + 500,to_screen_coordinate(x,y).y/50 + 500,5,1);
     
     return value;
 
