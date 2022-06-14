@@ -157,19 +157,7 @@ window.addEventListener("keyup",function(e){
     }
 });
 
-function convertCanvasToImage(canvas) {
-    var image = new Image();
-    canvas.toBlob(function(blob) {
-            url = URL.createObjectURL(blob);
-            image.onload = function() {
-          URL.revokeObjectURL(url);
-        };
 
-        image.src = url;
-
-    })
-    return image;
-}
 
 function generateChunk(chunkX,chunkY){
     for(var z = 0; z < 5; z++){
@@ -252,13 +240,11 @@ function generateChunk(chunkX,chunkY){
     }
 
 
-    image = convertCanvasToImage(preRenderCanvas);
 
 
 
-    chunkList[`${chunkY},${chunkX}`] = image;
+    chunkList[`${chunkY},${chunkX}`] = preRenderCanvas;
 
-    return image
     
 } 
 
