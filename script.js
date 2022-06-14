@@ -18,6 +18,7 @@ var chunkList = {
 
 
 
+
 const chunkSize = 24;
 const mapSize = 0;
 
@@ -34,23 +35,41 @@ var player = {
     direction: 0
 }
 
+var mouse = {
+    x: 0,
+    y: 0
+}
+
 var blocks = new Image();
 
 blocks.src = "blocks.png"
 
 var image = new Image();
 
+window.addEventListener('wheel', function(e){
+    if(e.deltaY < 0 && drawScale < 2){
+        player.x += mouse.x/55/drawScale
+        player.y += mouse.y/55/drawScale
+        drawScale *= 1.1;
+
+    }
+    if(e.deltaY > 0 && drawScale > 0.2){
+        player.y -= mouse.y/45/drawScale
+        player.x -= mouse.x/45/drawScale
+
+        drawScale *= 0.9;
+
+
+    }
+});
+
 window.addEventListener("mousemove", function(e){
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
 })
 
 window.addEventListener("keydown",function(e){
-    console.log(e.keyCode);
-    if(e.keyCode == 69 && drawScale < 2){
-        drawScale *= 1.1;
-    }
-    if(e.keyCode == 81 && drawScale > 0.2){
-        drawScale *= 0.9;
-    }
+
     if(e.keyCode == 70){
         var parentDiv = document.getElementById("content");
         parentDiv.requestFullscreen();
