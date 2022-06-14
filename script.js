@@ -18,10 +18,12 @@ var chunkList = {
 
 
 
-const chunkSize = 32;
+const chunkSize = 24;
 const mapSize = 0;
 
 const scale = 100;
+
+var drawScale = 1;
 
 var player = {
     x: 0,
@@ -41,10 +43,14 @@ var image = new Image();
 window.addEventListener("mousemove", function(e){
 })
 
-
 window.addEventListener("keydown",function(e){
     console.log(e.keyCode);
-
+    if(e.keyCode == 69 && drawScale < 2){
+        drawScale *= 1.1;
+    }
+    if(e.keyCode == 81 && drawScale > 0.2){
+        drawScale *= 0.9;
+    }
     if(e.keyCode == 70){
         var parentDiv = document.getElementById("content");
         parentDiv.requestFullscreen();
@@ -276,12 +282,12 @@ function show_map(){
     
     let listOfcoordinates = {
         third:{
-            x: Math.floor(to_grid_coordinate(-500+player.x*5,-1020+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(-500+player.x*5,-1020+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate((-500+player.x*5) + 1920/drawScale,(-1020+player.y*5) - 1920/drawScale).x/chunkSize),
+            y: Math.floor(to_grid_coordinate((-500+player.x*5) + 1920/drawScale,(-1020+player.y*5) - 1920/drawScale).y/chunkSize)
         },
         fourth:{
-            x: Math.floor(to_grid_coordinate(500+player.x*5,1020+player.y*5).x/chunkSize),
-            y: Math.floor(to_grid_coordinate(500+player.x*5,1020+player.y*5).y/chunkSize)
+            x: Math.floor(to_grid_coordinate((500+player.x*5) + 1920/drawScale,(1020+player.y*5) + 1920/drawScale).x/chunkSize),
+            y: Math.floor(to_grid_coordinate((500+player.x*5) + 1920/drawScale,(1020+player.y*5) + 1920/drawScale).y/chunkSize)
         }
     }
 
@@ -290,7 +296,7 @@ function show_map(){
         for(var y = listOfcoordinates.third.y-1; y <= listOfcoordinates.fourth.y+1; y++){
             try{
 
-                backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5,backCanvas.height/5,0,0,backCanvas.width,backCanvas.height);
+                backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5/drawScale,backCanvas.height/5/drawScale,0,0,backCanvas.width,backCanvas.height);
             }catch{
                 generateChunk(x,y)                    
             
