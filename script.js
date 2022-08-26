@@ -221,9 +221,11 @@ function generateChunk(chunkX,chunkY){
             }
         }
     }
-    var offscreen = new OffscreenCanvas(1920/2 - 60, 1080/2);
+    var preRenderCanvas = document.createElement("canvas")
+    preRenderCanvas.width = 1920/2 - 60
+    preRenderCanvas.height = 1080/2
 
-    var preRenderCtx = offscreen.getContext("2d");
+    var preRenderCtx = preRenderCanvas.getContext("2d");
     
 
     for(var z = 0; z < 5; z++){
@@ -240,7 +242,7 @@ function generateChunk(chunkX,chunkY){
 
 
 
-    chunkList[`${chunkY},${chunkX}`] = offscreen;
+    chunkList[`${chunkY},${chunkX}`] = preRenderCanvas;
 
     
 } 
@@ -297,7 +299,6 @@ function show_map(){
     for(var x = listOfcoordinates.third.x-1; x <= listOfcoordinates.fourth.x+1; x++){
         for(var y = listOfcoordinates.third.y-1; y <= listOfcoordinates.fourth.y+1; y++){
             try{
-
                 backCtx.drawImage(chunkList[`${y},${x}`],player.x + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).x + chunkSize*10,player.y + to_screen_coordinate(-x*chunkSize/5,-y*chunkSize/5).y,backCanvas.width/5/drawScale,backCanvas.height/5/drawScale,0,0,backCanvas.width,backCanvas.height);
             }catch{
                 if(list[`${y},${x}`] == undefined){
